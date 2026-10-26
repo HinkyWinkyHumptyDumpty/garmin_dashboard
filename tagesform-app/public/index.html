@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tagesform</title>
+<meta name="description" content="Erholung, Training und Rennplanung aus deinen Garmin-Daten">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tagesform">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="tf" id="tf" data-theme="light">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-wave" viewBox="0 0 24 24"><path d="M2 12h4l2-6 4 12 3-9 2 3h5"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-9.2-8.6C1.2 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.4 3.7 3.8 6.9C19 15.6 12 20 12 20z"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></symbol>
+    <symbol id="i-lungs" viewBox="0 0 24 24"><path d="M3 15c3-1 4.5 1 7 0M3 10c3-1 4.5 1 7 0M14 15c3-1 4.5 1 7 0M14 10c3-1 4.5 1 7 0"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 7v6M12 17h.01"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><path d="M12 11v6M12 7h.01"/></symbol>
+    <symbol id="i-bike" viewBox="0 0 24 24"><circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-8h5l3 8M10 8 8 5H6"/></symbol>
+    <symbol id="i-run" viewBox="0 0 24 24"><circle cx="14" cy="4.5" r="1.8"/><path d="M8 21l3-6 3 2v5M6 12l3-4 4 1 3 4 3 1"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 22c4 0 7-2.6 7-6.5 0-4-3-6.5-4.5-9.5-1 2.5-2.5 3.5-3.5 3.5 0-2-1-4-3-6.5C7 6 5 9.5 5 15.5 5 19.4 8 22 12 22z"/></symbol>
+    <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1.9 2 5.1 2 7 0M9 9.5h.01M15 9.5h.01"/></symbol>
+    <symbol id="i-swim" viewBox="0 0 24 24"><path d="M2 17c2 0 2.5-1.3 5-1.3S9.5 17 12 17s2.5-1.3 5-1.3 3 1.3 5 1.3M2 21c2 0 2.5-1.3 5-1.3S9.5 21 12 21s2.5-1.3 5-1.3 3 1.3 5 1.3"/><circle cx="16.5" cy="6.5" r="1.8"/><path d="m5 13 4.5-5 3 2.5L15 9"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.2-4 4.3-6 8-6s6.8 2 8 6"/></symbol>
+    <symbol id="i-ring" viewBox="0 0 24 24"><path d="M6.3 18.4A8.5 8.5 0 1 1 17.7 18.4"/><circle cx="12" cy="12" r="2.4"/></symbol>
+    <symbol id="i-sync" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-14.3 4.9M4 12A8 8 0 0 1 18.3 7.1"/><path d="M18.5 3v4.3h-4.3M5.5 21v-4.3h4.3"/></symbol>
+    <symbol id="i-scale" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><path d="M8.5 9.5a5 5 0 0 1 7 0L13 12"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.5s6 6.6 6 11a6 6 0 0 1-12 0c0-4.4 6-11 6-11z"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 2H4.4z"/><path d="M10 21a2.2 2.2 0 0 0 4 0"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18.5h10.5a4 4 0 0 0 .5-8A6 6 0 0 0 6.4 9.2 4.7 4.7 0 0 0 7 18.5z"/></symbol>
+  </defs>
+</svg>
+<div class="tf-wrap">
+  <header class="tf-head" id="kopf">
+    <div class="tf-eyebrow">
+      <svg class="tf-logo" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="tf-lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#30d158"/><stop offset="1" stop-color="#0a84ff"/></linearGradient></defs><circle cx="12" cy="12" r="8.5" fill="none" stroke="url(#tf-lg)" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="44 60" transform="rotate(130 12 12)"/><circle cx="12" cy="12" r="2.6" fill="url(#tf-lg)"/></svg>
+      <span class="tf-brand">Tagesform</span><span class="tf-dot" aria-hidden="true"></span>
+      <span class="dash-skeleton tf-stand" data-source="heute" data-field="stand" data-row="0"></span>
+      <button class="tf-sync" id="sync-knopf" type="button" aria-label="Garmin-Daten aktualisieren"><svg class="tf-ico"><use href="#i-sync"/></svg><span id="sync-text">Aktualisieren</span></button>
+    </div>
+    <h1 class="tf-title dash-skeleton" data-source="heute" data-field="titel_datum" data-row="0"></h1>
+    <p class="tf-lede dash-skeleton" data-source="heute" data-field="satz" data-row="0"></p>
+  </header>
+
+  <div class="tf-tabbar">
+    <nav class="tf-tabs" role="tablist" aria-label="Bereiche">
+      <button class="tf-tab" role="tab" id="tab-heute" data-tab="heute" data-group="heute" aria-controls="heute" aria-selected="true">Heute</button>
+      <button class="tf-tab" role="tab" id="tab-befinden" data-tab="befinden" data-group="heute" aria-controls="befinden" aria-selected="false">Befinden</button>
+      <button class="tf-tab" role="tab" id="tab-erholung" data-tab="erholung" data-group="erholung" aria-controls="erholung" aria-selected="false">Erholung</button>
+      <button class="tf-tab" role="tab" id="tab-schlaf" data-tab="schlaf" data-group="erholung" aria-controls="schlaf" aria-selected="false">Schlaf</button>
+      <button class="tf-tab" role="tab" id="tab-training" data-tab="training" data-group="training" aria-controls="training" aria-selected="false">Training</button>
+      <button class="tf-tab" role="tab" id="tab-schwimmen" data-tab="schwimmen" data-group="training" aria-controls="schwimmen" aria-selected="false">Schwimmen</button>
+      <button class="tf-tab" role="tab" id="tab-leistung" data-tab="leistung" data-group="training" aria-controls="leistung" aria-selected="false">Leistung</button>
+      <button class="tf-tab" role="tab" id="tab-rennen" data-tab="rennen" data-group="rennen" aria-controls="rennen" aria-selected="false">Rennrechner</button>
+      <button class="tf-tab" role="tab" id="tab-profil" data-tab="profil" data-group="profil" aria-controls="profil" aria-selected="false">Profil</button>
+      <button class="tf-tab" role="tab" id="tab-methodik" data-tab="methodik" data-group="profil" aria-controls="methodik" aria-selected="false">Methodik</button>
+    </nav>
+  </div>
+
+  <!-- HEUTE -->
+  <section class="tf-page" id="heute" role="tabpanel" aria-labelledby="tab-heute">
+    <button class="tf-card tf-banner" id="checkin-banner" type="button" hidden>
+      <span class="tf-badge" style="background:var(--tf-green)"><svg class="tf-ico"><use href="#i-smile"/></svg></span>
+      <span class="tf-banner-t"><b id="checkin-banner-titel">Wie geht’s dir heute?</b><small id="checkin-banner-sub">20 Sekunden – dein Befinden fließt in die Tagesform ein</small></span>
+      <svg class="tf-ico tf-chev"><use href="#i-chev"/></svg>
+    </button>
+    <div class="tf-hero-grid">
+      <article class="tf-card tf-hero" id="karte-tagesform">
+        <div class="tf-ring-wrap">
+          <div class="tf-ring" id="ring-tagesform" data-source="erholung"></div>
+          <div class="tf-ring-center">
+            <div class="tf-ring-num num"><span id="ring-wert" class="dash-skeleton"></span><span class="tf-pct" id="ring-pct">%</span></div>
+            <div class="tf-ring-cap">Tagesform</div>
+          </div>
+        </div>
+        <div class="tf-hero-side">
+          <div class="tf-status"><span class="tf-status-dot" id="status-punkt"></span><span id="status-label" class="dash-skeleton"></span></div>
+          <div class="tf-limit" id="status-grund"></div>
+          <div class="tf-hero-date" id="status-ansicht">Ansicht: <span id="status-wtag"></span> <span id="status-datum"></span></div>
+          <p class="tf-note" style="margin-top:12px">Balken: Abweichung von deinem Normal – rechts ist besser.</p>
+          <ul class="tf-drivers">
+            <li class="tf-driver" id="treiber-hrv">
+              <span class="tf-badge" style="background:var(--tf-purple)"><svg class="tf-ico"><use href="#i-wave"/></svg></span>
+              <div class="tf-dname">HRV<small id="treiber-hrv-delta"></small></div>
+              <div class="tf-dval"><span class="num" id="treiber-hrv-wert"></span><span class="tf-u">ms</span></div>
+              <div class="tf-zbar" id="treiber-hrv-z"></div>
+            </li>
+            <li class="tf-driver" id="treiber-ruhepuls">
+              <span class="tf-badge" style="background:var(--tf-pink)"><svg class="tf-ico"><use href="#i-heart"/></svg></span>
+              <div class="tf-dname">Ruhepuls<small id="treiber-rhr-delta"></small></div>
+              <div class="tf-dval"><span class="num" id="treiber-rhr-wert"></span><span class="tf-u">bpm</span></div>
+              <div class="tf-zbar" id="treiber-rhr-z"></div>
+            </li>
+            <li class="tf-driver" id="treiber-schlaf">
+              <span class="tf-badge" style="background:var(--tf-indigo)"><svg class="tf-ico"><use href="#i-moon"/></svg></span>
+              <div class="tf-dname">Schlaf<small><span id="treiber-schlaf-pct"></span> % des Bedarfs</small></div>
+              <div class="tf-dval"><span class="num" id="treiber-schlaf-wert"></span><span class="tf-u">h</span></div>
+              <div class="tf-zbar" id="treiber-schlaf-z"></div>
+            </li>
+            <li class="tf-driver" id="treiber-befinden">
+              <span class="tf-badge" style="background:var(--tf-green)"><svg class="tf-ico"><use href="#i-smile"/></svg></span>
+              <div class="tf-dname">Befinden<small id="treiber-befinden-sub"></small></div>
+              <div class="tf-dval"><span class="num" id="treiber-befinden-wert"></span><span class="tf-u">/25</span></div>
+              <div class="tf-zbar" id="treiber-befinden-z"></div>
+            </li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="tf-card tf-reco" id="karte-empfehlung">
+        <div class="tf-card-head">
+          <span class="tf-badge" style="background:var(--tf-blue)"><svg class="tf-ico"><use href="#i-target"/></svg></span>
+          <div><h2>Empfehlung für heute</h2><div class="tf-sub">Aus Tagesform und Trainingsstand</div></div>
+        </div>
+        <div class="tf-reco-title dash-skeleton" data-source="heute" data-field="empfehlung" data-row="0"></div>
+        <div class="tf-chips">
+          <span class="tf-chip"><svg class="tf-ico"><use href="#i-bolt"/></svg><span data-source="heute" data-field="rahmen" data-row="0"></span></span>
+          <span class="tf-chip"><svg class="tf-ico"><use href="#i-clock"/></svg><span data-source="heute" data-field="rahmen_min" data-row="0"></span></span>
+          <span class="tf-chip"><svg class="tf-ico"><use href="#i-heart"/></svg><span data-source="heute" data-field="zone" data-row="0"></span></span>
+        </div>
+        <p class="tf-reco-text" data-source="heute" data-field="intensitaet" data-row="0"></p>
+        <div class="tf-callout"><p class="tf-allow-empty tf-warn" data-source="heute" data-field="schmerz_hinweis" data-row="0"></p><p class="tf-allow-empty" data-source="heute" data-field="aufbau" data-row="0"></p></div>
+      </article>
+    </div>
+
+    <article class="tf-card" id="karte-verlauf" style="margin-top:14px">
+      <div class="tf-card-head"><div><h2>Die letzten 14 Tage</h2><div class="tf-sub">Tippe auf einen Tag, um ihn oben anzusehen</div></div></div>
+      <div class="tf-strip" id="tagesleiste"></div>
+    </article>
+
+    <div class="tf-tiles" style="margin-top:14px">
+      <div class="tf-tile" id="kachel-schuld"><div class="tf-tile-label"><svg class="tf-ico" style="color:var(--tf-indigo)"><use href="#i-moon"/></svg>Schlafschuld</div><div class="tf-tile-val"><span class="num" data-source="heute" data-field="schuld7_hm" data-row="0"></span><span class="tf-u">h</span></div><div class="tf-tile-sub">in den letzten 7 Nächten</div></div>
+      <div class="tf-tile" id="kachel-fitness"><div class="tf-tile-label"><svg class="tf-ico" style="color:var(--tf-blue)"><use href="#i-flame"/></svg>Fitness (CTL)</div><div class="tf-tile-val"><span class="num" data-source="heute" data-field="ctl" data-row="0"></span></div><div class="tf-tile-sub">Spitze <span data-source="heute" data-field="ctl_peak" data-row="0"></span> am <span data-source="heute" data-field="ctl_peak_datum" data-row="0"></span></div></div>
+      <div class="tf-tile" id="kachel-form"><div class="tf-tile-label"><svg class="tf-ico" style="color:var(--tf-teal)"><use href="#i-gauge"/></svg>Form (TSB)</div><div class="tf-tile-val"><span class="num" data-source="heute" data-field="tsb_txt" data-row="0"></span></div><div class="tf-tile-sub">Fitness minus Ermüdung</div></div>
+      <button class="tf-tile tf-tile-btn" id="kachel-laufbudget" type="button" aria-label="Laufbudget – zum Lauf-Belastungswächter"><span class="tf-tile-label"><svg class="tf-ico" style="color:var(--tf-mint)"><use href="#i-run"/></svg>Laufbudget<i class="tf-ampel" id="kachel-lauf-ampel"></i></span><span class="tf-tile-val"><span class="num" data-source="laufwaechter" data-field="kachel_wert" data-row="0"></span><span class="tf-u tf-allow-empty" data-source="laufwaechter" data-field="kachel_u" data-row="0"></span></span><span class="tf-tile-sub" data-source="laufwaechter" data-field="kachel_sub" data-row="0"></span></button>
+      <div class="tf-tile" id="kachel-pause"><div class="tf-tile-label"><svg class="tf-ico" style="color:var(--tf-orange)"><use href="#i-clock"/></svg>Letzte Einheit</div><div class="tf-tile-val"><span class="num" data-source="heute" data-field="letzte_einheit" data-row="0"></span></div><div class="tf-tile-sub"><span data-source="heute" data-field="pause_tage" data-row="0"></span> Tage her</div></div>
+    </div>
+
+    <h2 class="tf-sec">Was deine Daten sagen</h2>
+    <div class="tf-insights" id="erkenntnisse-heute"></div>
+  </section>
+
+  <!-- BEFINDEN -->
+  <section class="tf-page" id="befinden" role="tabpanel" aria-labelledby="tab-befinden" hidden>
+    <div class="tf-grid">
+      <article class="tf-card tf-span2" id="karte-checkin">
+        <div class="tf-card-head">
+          <span class="tf-badge" style="background:var(--tf-green)"><svg class="tf-ico"><use href="#i-smile"/></svg></span>
+          <div><h2>Morgen-Check-in</h2><div class="tf-sub">Fünf kurze Fragen – 5 ist jeweils der beste Wert</div></div>
+          <div class="tf-kpi"><span class="num" id="checkin-summe">–</span><span class="tf-u">/25</span><div class="tf-kpi-sub" id="checkin-vergleich"></div></div>
+        </div>
+        <form class="tf-form" id="checkin-form" autocomplete="off">
+          <div class="tf-form-row"><span class="tf-form-l">Tag</span><div class="tf-seg" id="checkin-tag" role="group" aria-label="Tag"></div></div>
+          <div class="tf-likerts" id="checkin-fragen"></div>
+          <div class="tf-form-block">
+            <div class="tf-form-l2"><span>Schmerzen oder Beschwerden</span><b id="checkin-schmerz-wert">keine</b></div>
+            <input class="tf-range" id="checkin-schmerz" type="range" min="0" max="10" step="1" value="0" aria-label="Schmerz von 0 bis 10">
+            <div class="tf-chipset" id="checkin-ort" role="group" aria-label="Wo?" hidden></div>
+          </div>
+          <label class="tf-switch"><input type="checkbox" id="checkin-krank"><span class="tf-switch-ui" aria-hidden="true"></span><span>Ich fühle mich krank <small>Halskratzen, Fieber, Gliederschmerzen</small></span></label>
+          <textarea class="tf-input" id="checkin-notiz" rows="2" maxlength="500" placeholder="Notiz (optional) – z. B. Reise, Alkohol, Stress im Job"></textarea>
+          <div class="tf-form-actions"><button class="tf-btn tf-btn-primary" id="checkin-speichern" type="submit">Speichern</button><button class="tf-btn tf-btn-plain" id="checkin-loeschen" type="button" hidden>Eintrag löschen</button><span class="tf-form-msg" id="checkin-msg" role="status"></span></div>
+        </form>
+      </article>
+      <article class="tf-card tf-span2" id="karte-befinden-verlauf">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-green)"><svg class="tf-ico"><use href="#i-wave"/></svg></span><div><h2>Befinden im Verlauf</h2><div class="tf-sub">Punkte: Check-ins · Linie: 7-Tage-Schnitt · Band: dein Normal · rot: Schmerz ab 3/10</div></div></div>
+        <div class="tf-chart" id="chart-befinden" data-source="befinden" style="min-height:200px"></div>
+      </article>
+      <article class="tf-card tf-span2" id="karte-befinden-liste">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-gray)"><svg class="tf-ico"><use href="#i-clock"/></svg></span><div><h2>Letzte Einträge</h2><div class="tf-sub">Antippen zum Bearbeiten</div></div></div>
+        <div class="tf-table-wrap"><table class="tf-table tf-table-click" id="tabelle-befinden" data-source="befinden" data-row-key="date">
+          <thead><tr><th>Datum</th><th class="r">Summe</th><th class="r tf-hide-s">Schlaf</th><th class="r tf-hide-s">Energie</th><th class="r tf-hide-s">Muskeln</th><th class="r tf-hide-s">Stress</th><th class="r tf-hide-s">Stimmung</th><th class="r">Schmerz</th></tr></thead><tbody></tbody>
+        </table></div>
+      </article>
+    </div>
+    <h2 class="tf-sec">Körper & Energie</h2>
+    <div class="tf-grid">
+      <article class="tf-card" id="karte-gewicht">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-indigo)"><svg class="tf-ico"><use href="#i-scale"/></svg></span><div><h2>Gewicht</h2><div class="tf-sub">Aus Garmin Connect · Linie: 7-Tage-Mittel · gestrichelt: Referenz</div></div>
+          <div class="tf-kpi"><span class="num" data-source="gewicht_stand" data-field="mittel7" data-row="0"></span><span class="tf-u">kg</span><div class="tf-kpi-sub">Ref. <span data-source="gewicht_stand" data-field="ref_kg" data-row="0"></span> kg</div></div></div>
+        <div class="tf-chart" id="chart-gewicht" data-source="gewicht" style="min-height:180px"></div>
+        <div class="tf-kv tf-kv-2" style="margin-top:12px">
+          <div><small>W/kg (Referenz)</small><span class="num" data-source="gewicht_stand" data-field="wkg_ref" data-row="0"></span></div>
+          <div><small>W/kg (aktuell)</small><span class="num" data-source="gewicht_stand" data-field="wkg_ist" data-row="0"></span></div>
+        </div>
+        <p class="tf-note" data-source="gewicht_stand" data-field="hinweis" data-row="0"></p>
+      </article>
+      <article class="tf-card" id="karte-ernaehrung">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-orange)"><svg class="tf-ico"><use href="#i-flame"/></svg></span><div><h2>Ernährung</h2><div class="tf-sub">Aus Garmin Connect · Kohlenhydrate pro kg gegen die Spanne für deinen Trainingstag</div></div></div>
+        <div class="tf-chart" id="chart-ernaehrung" data-source="ernaehrung" style="min-height:180px"></div>
+      </article>
+    </div>
+    <h2 class="tf-sec">Erkenntnisse</h2>
+    <div class="tf-insights" id="erkenntnisse-befinden"></div>
+  </section>
+
+  <!-- ERHOLUNG -->
+  <section class="tf-page" id="erholung" role="tabpanel" aria-labelledby="tab-erholung" hidden>
+    <div class="tf-filter"><span class="tf-filter-label">Zeitraum</span><div class="tf-seg tf-range-seg" role="group" aria-label="Zeitraum"></div></div>
+    <div class="tf-grid">
+      <article class="tf-card tf-span2" id="karte-hrv">
+        <div class="tf-card-head">
+          <span class="tf-badge" style="background:var(--tf-purple)"><svg class="tf-ico"><use href="#i-wave"/></svg></span>
+          <div><h2>Herzfrequenzvariabilität</h2><div class="tf-sub">Nächtlicher RMSSD · Linie: 7-Tage-Schnitt · Band: dein Normalbereich</div></div>
+          <div class="tf-kpi"><span class="num" data-source="heute" data-field="hrv" data-row="0"></span><span class="tf-u">ms</span><div class="tf-kpi-sub">Basis <span data-source="heute" data-field="hrv_basis" data-row="0"></span> ms</div></div>
+        </div>
+        <div class="tf-chart" id="chart-hrv" data-source="erholung" style="min-height:230px"></div>
+        <div class="tf-legend"><span><i class="tf-band" style="background:var(--tf-purple)"></i>Normalbereich</span><span><i class="tf-line" style="background:var(--tf-purple)"></i>7-Tage-Schnitt</span><span><i style="background:var(--tf-purple);opacity:.45;border-radius:50%;width:8px;height:8px"></i>einzelne Nacht</span></div>
+      </article>
+      <article class="tf-card" id="karte-ruhepuls">
+        <div class="tf-card-head">
+          <span class="tf-badge" style="background:var(--tf-pink)"><svg class="tf-ico"><use href="#i-heart"/></svg></span>
+          <div><h2>Ruhepuls</h2><div class="tf-sub">Nachts · Linie: 7-Tage-Schnitt · Band: Normalbereich</div></div>
+          <div class="tf-kpi"><span class="num" data-source="heute" data-field="rhr" data-row="0"></span><span class="tf-u">bpm</span><div class="tf-kpi-sub">Basis <span data-source="heute" data-field="rhr_basis_txt" data-row="0"></span></div></div>
+        </div>
+        <div class="tf-chart" id="chart-ruhepuls" data-source="erholung" style="min-height:200px"></div>
+      </article>
+      <article class="tf-card" id="karte-status">
+        <div class="tf-card-head">
+          <span class="tf-badge" style="background:var(--tf-indigo)"><svg class="tf-ico"><use href="#i-gauge"/></svg></span>
+          <div><h2>Autonomer Status</h2><div class="tf-sub" id="status-zeitraum">HRV und Ruhepuls gegen deine Norm</div></div>
+        </div>
+        <div class="tf-chart" id="chart-quadrant" data-source="erholung" style="min-height:260px"></div>
+      </article>
+      <article class="tf-card tf-span2" id="karte-atmung">
+        <div class="tf-card-head">
+          <span class="tf-badge" style="background:var(--tf-teal)"><svg class="tf-ico"><use href="#i-lungs"/></svg></span>
+          <div><h2>Atemfrequenz im Schlaf</h2><div class="tf-sub">Gestrichelt: Warnschwelle über deiner Basis</div></div>
+          <div class="tf-kpi"><span class="num" data-source="heute" data-field="atem_txt" data-row="0"></span><span class="tf-u">/min</span><div class="tf-kpi-sub">Basis <span data-source="heute" data-field="atem_basis_txt" data-row="0"></span></div></div>
+        </div>
+        <div class="tf-chart" id="chart-atmung" data-source="erholung" style="min-height:170px"></div>
+      </article>
+    </div>
+    <h2 class="tf-sec">Erkenntnisse</h2>
+    <div class="tf-insights" id="erkenntnisse-erholung"></div>
+  </section>
+
+  <!-- SCHLAF -->
+  <section class="tf-page" id="schlaf" role="tabpanel" aria-labelledby="tab-schlaf" hidden>
+    <div class="tf-filter"><span class="tf-filter-label">Zeitraum</span><div class="tf-seg tf-range-seg" role="group" aria-label="Zeitraum"></div></div>
+    <div class="tf-tiles">
+      <div class="tf-tile" id="kachel-schlaf-schnitt"><div class="tf-tile-label">Ø Schlaf</div><div class="tf-tile-val"><span class="num" data-source="schlafmuster" data-field="schlaf_hm" data-where="id=14"></span><span class="tf-u">h</span></div><div class="tf-tile-sub">Bedarf <span data-source="schlafmuster" data-field="bedarf_hm" data-where="id=14"></span> h</div></div>
+      <div class="tf-tile" id="kachel-schlaf-schuld"><div class="tf-tile-label">Schlafschuld</div><div class="tf-tile-val"><span class="num" data-source="heute" data-field="schuld7_hm" data-row="0"></span><span class="tf-u">h</span></div><div class="tf-tile-sub">letzte 7 Nächte</div></div>
+      <div class="tf-tile" id="kachel-einschlaf"><div class="tf-tile-label">Einschlafen Ø</div><div class="tf-tile-val"><span class="num" data-source="schlafmuster" data-field="einschlaf" data-where="id=14"></span><span class="tf-u">Uhr</span></div><div class="tf-tile-sub">± <span data-source="schlafmuster" data-field="sd_einschlaf_min" data-where="id=14"></span> min</div></div>
+      <div class="tf-tile" id="kachel-effizienz"><div class="tf-tile-label">Effizienz</div><div class="tf-tile-val"><span class="num" data-source="schlafmuster" data-field="effizienz_pct" data-where="id=14"></span><span class="tf-u">%</span></div><div class="tf-tile-sub">Tief <span data-source="schlafmuster" data-field="tief_pct" data-where="id=14"></span> % · REM <span data-source="schlafmuster" data-field="rem_pct" data-where="id=14"></span> %</div></div>
+    </div>
+    <p class="tf-note">Kacheln: deine letzten 14 Nächte mit Daten (<span data-source="schlafmuster" data-field="zeitraum" data-where="id=14"></span>).</p>
+    <div class="tf-grid">
+      <article class="tf-card" id="karte-phasen">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-indigo)"><svg class="tf-ico"><use href="#i-moon"/></svg></span><div><h2>Schlafphasen</h2><div class="tf-sub">Letzte 14 Nächte mit Daten · Strich: dein Bedarf</div></div></div>
+        <div class="tf-chart" id="chart-phasen" data-source="erholung" style="min-height:220px"></div>
+        <div class="tf-legend"><span><i style="background:var(--tf-deep)"></i>Tief</span><span><i style="background:var(--tf-core)"></i>Leicht</span><span><i style="background:var(--tf-rem)"></i>REM</span><span><i style="background:var(--tf-awake)"></i>Wach</span></div>
+      </article>
+      <article class="tf-card" id="karte-fenster">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-blue)"><svg class="tf-ico"><use href="#i-clock"/></svg></span><div><h2>Schlaffenster</h2><div class="tf-sub">Wann du einschläfst und aufwachst</div></div></div>
+        <div class="tf-chart" id="chart-fenster" data-source="erholung" style="min-height:220px"></div>
+      </article>
+      <article class="tf-card tf-span2" id="karte-dauer">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-indigo)"><svg class="tf-ico"><use href="#i-moon"/></svg></span><div><h2>Schlafdauer</h2><div class="tf-sub">Balken: Nacht · Linie: 7-Tage-Schnitt · gestrichelt: Bedarf</div></div></div>
+        <div class="tf-chart" id="chart-dauer" data-source="erholung" style="min-height:200px"></div>
+      </article>
+    </div>
+    <h2 class="tf-sec">Erkenntnisse</h2>
+    <div class="tf-insights" id="erkenntnisse-schlaf"></div>
+  </section>
+
+  <!-- TRAINING -->
+  <section class="tf-page" id="training" role="tabpanel" aria-labelledby="tab-training" hidden>
+    <div class="tf-filter"><span class="tf-filter-label">Zeitraum</span><div class="tf-seg tf-range-seg" role="group" aria-label="Zeitraum"></div></div>
+    <div class="tf-tiles">
+      <div class="tf-tile" id="kachel-ctl"><div class="tf-tile-label"><i style="width:10px;height:10px;border-radius:3px;background:var(--tf-blue)"></i>Fitness</div><div class="tf-tile-val"><span class="num" data-source="heute" data-field="ctl" data-row="0"></span></div><div class="tf-tile-sub">CTL · 42-Tage-Mittel</div></div>
+      <div class="tf-tile" id="kachel-atl"><div class="tf-tile-label"><i style="width:10px;height:10px;border-radius:3px;background:var(--tf-pink)"></i>Ermüdung</div><div class="tf-tile-val"><span class="num" data-source="heute" data-field="atl" data-row="0"></span></div><div class="tf-tile-sub">ATL · 7-Tage-Mittel</div></div>
+      <div class="tf-tile" id="kachel-tsb"><div class="tf-tile-label">Form</div><div class="tf-tile-val"><span class="num" data-source="heute" data-field="tsb_txt" data-row="0"></span></div><div class="tf-tile-sub">TSB · Fitness − Ermüdung</div></div>
+      <div class="tf-tile" id="kachel-rampe"><div class="tf-tile-label">Rampe</div><div class="tf-tile-val"><span class="num" data-source="heute" data-field="rampe_txt" data-row="0"></span></div><div class="tf-tile-sub">CTL-Änderung in 7 Tagen</div></div>
+      <div class="tf-tile" id="kachel-acwr"><div class="tf-tile-label">ACWR</div><div class="tf-tile-val"><span class="num" data-source="heute" data-field="acwr_txt" data-row="0"></span></div><div class="tf-tile-sub" data-source="heute" data-field="acwr_hinweis" data-row="0"></div></div>
+    </div>
+    <div class="tf-grid">
+      <article class="tf-card tf-span2" id="karte-pmc">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-blue)"><svg class="tf-ico"><use href="#i-flame"/></svg></span><div><h2>Fitness, Ermüdung, Form</h2><div class="tf-sub">Banister-Modell auf deiner Tagesbelastung (TSS)</div></div></div>
+        <div class="tf-chart" id="chart-pmc" data-source="pmc" style="min-height:230px"></div>
+        <div class="tf-chart" id="chart-tsb" data-source="pmc" style="min-height:110px;margin-top:6px"></div>
+        <div class="tf-legend"><span><i class="tf-line" style="background:var(--tf-blue)"></i>Fitness (CTL)</span><span><i class="tf-line" style="background:var(--tf-pink)"></i>Ermüdung (ATL)</span><span><i style="background:var(--tf-teal)"></i>Form positiv</span><span><i style="background:var(--tf-orange)"></i>Form negativ</span></div>
+      </article>
+      <article class="tf-card tf-span2" id="karte-check">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-teal)"><svg class="tf-ico"><use href="#i-target"/></svg></span><div><h2>Einheiten-Check</h2><div class="tf-sub">Hat die Einheit den Reiz getroffen, den sie setzen sollte? Ausgewertet aus den Sekundendaten · antippen für den Verlauf</div></div></div>
+        <div class="tf-check-sum" id="check-summe"></div>
+        <div class="tf-check-list" id="check-liste" data-source="einheiten_check"></div>
+        <div class="tf-form-actions"><button class="tf-btn tf-btn-plain" id="check-mehr" type="button" hidden>Ältere Einheiten zeigen</button></div>
+        <p class="tf-note" id="check-hinweis"></p>
+      </article>
+      <article class="tf-card" id="karte-wochen">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-orange)"><svg class="tf-ico"><use href="#i-clock"/></svg></span><div><h2>Umfang pro Woche</h2><div class="tf-sub">Stunden je Sportart</div></div></div>
+        <div class="tf-chart" id="chart-wochen" data-source="wochen" style="min-height:220px"></div>
+        <div class="tf-legend"><span><i style="background:var(--tf-blue)"></i>Schwimmen</span><span><i style="background:var(--tf-orange)"></i>Rad</span><span><i style="background:var(--tf-mint)"></i>Laufen</span><span><i style="background:var(--tf-gray)"></i>Sonstiges</span></div>
+      </article>
+      <article class="tf-card" id="karte-verteilung">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-z2)"><svg class="tf-ico"><use href="#i-gauge"/></svg></span><div><h2>Intensitätsverteilung</h2><div class="tf-sub">3 Zonen: unter VT1 · zwischen · über VT2</div></div></div>
+        <div class="tf-tid" id="chart-verteilung" data-source="intensitaet"></div>
+        <div class="tf-legend"><span><i style="background:var(--tf-z1)"></i>Z1 locker</span><span><i style="background:var(--tf-z2)"></i>Z2 Schwelle</span><span><i style="background:var(--tf-z3)"></i>Z3 hart</span></div>
+      </article>
+      <article class="tf-card" id="karte-laufwaechter">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-mint)"><svg class="tf-ico"><use href="#i-run"/></svg></span><div><h2>Lauf-Belastungswächter</h2><div class="tf-sub">Kilometer pro Woche gegen dein Budget – Schutz für Schienbein und Sehnen</div></div></div>
+        <div class="tf-lw-status"><i class="tf-ampel" id="lw-ampel"></i><b data-source="laufwaechter" data-field="titel" data-row="0"></b></div>
+        <p class="tf-lw-text" data-source="laufwaechter" data-field="text" data-row="0"></p>
+        <div class="tf-kv tf-kv-2" id="lw-kv"></div>
+        <div class="tf-chart" id="chart-laufwochen" data-source="lauf_wochen" style="min-height:170px;margin-top:14px"></div>
+        <div class="tf-legend"><span><i style="background:var(--tf-mint)"></i>km pro Woche</span><span><i style="background:var(--tf-orange)"></i>über der Grenze</span><span><i class="tf-line" style="background:var(--tf-fg)"></i>Grenze aus den 4 Wochen davor</span></div>
+      </article>
+      <article class="tf-card" id="karte-monotonie">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-gray)"><svg class="tf-ico"><use href="#i-wave"/></svg></span><div><h2>Monotonie</h2><div class="tf-sub">Ø Tagesbelastung ÷ Streuung je Woche · gestrichelt: Warnschwelle</div></div></div>
+        <div class="tf-chart" id="chart-monotonie" data-source="wochen" style="min-height:180px"></div>
+      </article>
+      <article class="tf-card tf-span2" id="karte-einheiten">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-mint)"><svg class="tf-ico"><use href="#i-run"/></svg></span><div><h2>Letzte Einheiten</h2><div class="tf-sub">Belastung und Rechenweg je Einheit</div></div></div>
+        <div class="tf-table-wrap"><table class="tf-table" id="tabelle-einheiten" data-source="belastung" data-row-key="id">
+          <thead><tr><th data-field="datum">Datum</th><th data-field="sportart">Sport</th><th data-field="dauer" class="r">Dauer</th><th data-field="km_txt" class="r tf-hide-s">km</th><th data-field="tss" class="r">TSS</th><th data-field="if_txt" class="r tf-hide-s">IF</th><th data-field="methode" class="tf-hide-s">Basis</th></tr></thead><tbody></tbody>
+        </table></div>
+      </article>
+      <article class="tf-card tf-span2" id="karte-fueling">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-orange)"><svg class="tf-ico"><use href="#i-drop"/></svg></span><div><h2>Fueling lange Einheiten</h2><div class="tf-sub">Kohlenhydrate pro Stunde · Ziel Rad <span data-source="ziele" data-field="kh" data-row="0"></span>, Lauf 60–90 g/h · aus Garmin oder hier eintragen</div></div></div>
+        <div class="tf-table-wrap"><table class="tf-table" id="tabelle-fueling" data-source="fueling" data-row-key="id">
+          <thead><tr><th>Datum</th><th>Sport</th><th class="r">Dauer</th><th class="r">KH (g)</th><th class="r">g/h</th><th class="tf-hide-s">Schweiß</th></tr></thead><tbody></tbody>
+        </table></div>
+        <p class="tf-note">Garmin-Ernährungseinträge zählen, wenn sie in das Zeitfenster der Einheit fallen. Sonst trägst du die Gramm direkt ein – die App merkt sie sich.</p>
+      </article>
+    </div>
+    <h2 class="tf-sec">Erkenntnisse</h2>
+    <div class="tf-insights" id="erkenntnisse-training"></div>
+  </section>
+
+  <!-- SCHWIMMEN -->
+  <section class="tf-page" id="schwimmen" role="tabpanel" aria-labelledby="tab-schwimmen" hidden>
+    <div class="tf-filter"><span class="tf-filter-label">Zeitraum</span><div class="tf-seg tf-range-seg" role="group" aria-label="Zeitraum"></div></div>
+    <div class="tf-tiles" id="schwimm-kacheln">
+      <div class="tf-tile"><div class="tf-tile-label"><svg class="tf-ico" style="color:var(--tf-blue)"><use href="#i-target"/></svg>CSS</div><div class="tf-tile-val"><span class="num" id="sk-css">–</span><span class="tf-u">/100 m</span></div><div class="tf-tile-sub" id="sk-css-sub">Schwellentempo</div></div>
+      <div class="tf-tile"><div class="tf-tile-label"><svg class="tf-ico" style="color:var(--tf-blue)"><use href="#i-swim"/></svg>Ø Tempo</div><div class="tf-tile-val"><span class="num" id="sk-tempo">–</span><span class="tf-u">/100 m</span></div><div class="tf-tile-sub" id="sk-tempo-sub">Becken, 4 Wochen</div></div>
+      <div class="tf-tile"><div class="tf-tile-label"><svg class="tf-ico" style="color:var(--tf-blue)"><use href="#i-wave"/></svg>Umfang</div><div class="tf-tile-val"><span class="num" id="sk-km">–</span><span class="tf-u">km</span></div><div class="tf-tile-sub" id="sk-km-sub">4 Wochen</div></div>
+      <div class="tf-tile"><div class="tf-tile-label"><svg class="tf-ico" style="color:var(--tf-blue)"><use href="#i-gauge"/></svg>Strecke pro Zug</div><div class="tf-tile-val"><span class="num" id="sk-dps">–</span><span class="tf-u">m</span></div><div class="tf-tile-sub" id="sk-dps-sub">Median, 4 Wochen</div></div>
+    </div>
+    <div class="tf-grid">
+      <article class="tf-card tf-span2" id="karte-schwimm-tempo">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-blue)"><svg class="tf-ico"><use href="#i-swim"/></svg></span><div><h2>Tempo pro 100 m</h2><div class="tf-sub">Bewegungszeit je Einheit · oben ist schneller · Bänder: Intensität zu deiner CSS</div></div></div>
+        <div class="tf-chart" id="chart-schwimm-tempo" data-source="schwimmen" style="min-height:230px"></div>
+        <div class="tf-legend"><span><i style="background:var(--tf-blue);border-radius:50%;width:9px;height:9px"></i>Becken</span><span><i style="background:var(--tf-teal);border-radius:50%;width:9px;height:9px"></i>Freiwasser</span><span><i class="tf-dash" style="border-color:var(--tf-red)"></i>CSS</span><span><i class="tf-band" style="background:var(--tf-blue)"></i>Ausdauer 90–97 %</span></div>
+      </article>
+      <article class="tf-card" id="karte-schwimm-wochen">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-blue)"><svg class="tf-ico"><use href="#i-clock"/></svg></span><div><h2>Umfang pro Woche</h2><div class="tf-sub">Kilometer je Kalenderwoche</div></div></div>
+        <div class="tf-chart" id="chart-schwimm-wochen" data-source="schwimm_wochen" style="min-height:190px"></div>
+      </article>
+      <article class="tf-card" id="karte-schwimm-technik">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-teal)"><svg class="tf-ico"><use href="#i-gauge"/></svg></span><div><h2>Strecke pro Zug</h2><div class="tf-sub">Meter je Armzug-Zyklus · mehr ist ökonomischer</div></div></div>
+        <div class="tf-chart" id="chart-schwimm-dps" data-source="schwimmen" style="min-height:190px"></div>
+      </article>
+      <article class="tf-card" id="karte-css">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-red)"><svg class="tf-ico"><use href="#i-target"/></svg></span><div><h2>CSS-Test eintragen</h2><div class="tf-sub">400 m und 200 m maximal, dazwischen 5–10 min Pause</div></div></div>
+        <form class="tf-form" id="css-form" autocomplete="off">
+          <div class="tf-form-grid">
+            <label class="tf-field"><span>Datum</span><input class="tf-input" id="css-datum" type="date" required></label>
+            <label class="tf-field"><span>400 m</span><input class="tf-input" id="css-400" inputmode="numeric" placeholder="6:05" required></label>
+            <label class="tf-field"><span>200 m</span><input class="tf-input" id="css-200" inputmode="numeric" placeholder="2:55" required></label>
+          </div>
+          <div class="tf-css-result"><span>Deine CSS</span><b class="num" id="css-ergebnis">–</b></div>
+          <div class="tf-form-actions"><button class="tf-btn tf-btn-primary" type="submit">Als neue CSS übernehmen</button><span class="tf-form-msg" id="css-msg" role="status"></span></div>
+        </form>
+        <div class="tf-table-wrap" style="margin-top:10px"><table class="tf-table" id="tabelle-css" data-source="css" data-row-key="date"><thead><tr><th>Datum</th><th class="r">400 m</th><th class="r">200 m</th><th class="r">CSS</th></tr></thead><tbody></tbody></table></div>
+      </article>
+      <article class="tf-card" id="karte-schwimm-einheiten">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-blue)"><svg class="tf-ico"><use href="#i-swim"/></svg></span><div><h2>Letzte Schwimmeinheiten</h2><div class="tf-sub">Intensität als Anteil an deinem CSS-Tempo</div></div></div>
+        <div class="tf-table-wrap"><table class="tf-table" id="tabelle-schwimmen" data-source="schwimmen" data-row-key="id">
+          <thead><tr><th>Datum</th><th class="tf-hide-s">Art</th><th class="r">m</th><th class="r">Tempo</th><th class="r">% CSS</th><th class="r tf-hide-s">SWOLF</th></tr></thead><tbody></tbody>
+        </table></div>
+      </article>
+    </div>
+    <h2 class="tf-sec">Erkenntnisse</h2>
+    <div class="tf-insights" id="erkenntnisse-schwimmen"></div>
+  </section>
+
+  <!-- LEISTUNG -->
+  <section class="tf-page" id="leistung" role="tabpanel" aria-labelledby="tab-leistung" hidden>
+    <div class="tf-grid">
+      <article class="tf-card" id="karte-kurve">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-orange)"><svg class="tf-ico"><use href="#i-bolt"/></svg></span><div><h2>Leistungskurve</h2><div class="tf-sub">Bestwerte je Dauer, letzte 12 Monate</div></div></div>
+        <div class="tf-chart" id="chart-kurve" data-source="leistung ftp" style="min-height:220px"></div>
+        <div class="tf-legend"><span><i class="tf-line" style="background:var(--tf-orange)"></i>Bestwert</span><span><i class="tf-dash" style="border-color:var(--tf-blue)"></i>Referenz-FTP</span><span><i class="tf-dash" style="border-color:var(--tf-gray)"></i>Daten-FTP</span></div>
+      </article>
+      <article class="tf-card" id="karte-ftp">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-blue)"><svg class="tf-ico"><use href="#i-gauge"/></svg></span><div><h2>Wo liegt deine FTP?</h2><div class="tf-sub">Schätzungen aus deinen Daten neben deinen Profilwerten</div></div></div>
+        <div class="tf-table-wrap"><table class="tf-table" id="tabelle-ftp" data-source="ftp" data-row-key="id">
+          <thead><tr><th data-field="methode">Methode</th><th data-field="watt" class="r">Watt</th><th data-field="wkg" class="r">W/kg</th><th data-field="hinweis" class="tf-hide-s">Hinweis</th></tr></thead><tbody></tbody>
+        </table></div>
+      </article>
+      <article class="tf-card" id="karte-kadenz">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-mint)"><svg class="tf-ico"><use href="#i-run"/></svg></span><div><h2>Schrittfrequenz</h2><div class="tf-sub">Punkte: Läufe · Linie: Median der letzten 7 · gestrichelt: Ziel</div></div></div>
+        <div class="tf-chart" id="chart-kadenz" data-source="lauf athlet" style="min-height:200px"></div>
+      </article>
+      <article class="tf-card" id="karte-effizienz">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-teal)"><svg class="tf-ico"><use href="#i-wave"/></svg></span><div><h2>Aerobe Effizienz</h2><div class="tf-sub">Rad: Watt pro Herzschlag · steigt mit der Grundlage</div></div></div>
+        <div class="tf-chart" id="chart-ef-rad" data-source="rad" style="min-height:170px"></div>
+        <div class="tf-sub" style="margin:12px 0 4px;font-size:13px;color:var(--tf-fg2)">Lauf: Meter pro Minute pro Herzschlag</div>
+        <div class="tf-chart" id="chart-ef-lauf" data-source="lauf" style="min-height:170px"></div>
+      </article>
+      <article class="tf-card" id="karte-bedarf">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-orange)"><svg class="tf-ico"><use href="#i-bike"/></svg></span><div><h2>Watt für den Ziel-Split</h2><div class="tf-sub">Für <span data-source="ziele" data-field="rad" data-row="0"></span> h: nötige Leistung je CdA und Anteil deiner FTP</div></div></div>
+        <div class="tf-table-wrap"><table class="tf-table" id="tabelle-bedarf" data-source="rad_bedarf" data-row-key="cda_txt">
+          <thead><tr><th data-field="cda_txt">CdA</th><th data-field="watt" class="r">Watt</th><th data-field="ref_pct" class="r">% Referenz</th><th data-field="daten_pct" class="r">% Daten</th><th data-field="genannt_pct" class="r tf-hide-s">% Genannt</th></tr></thead><tbody></tbody>
+        </table></div>
+      </article>
+    </div>
+    <h2 class="tf-sec">Erkenntnisse</h2>
+    <div class="tf-insights" id="erkenntnisse-leistung"></div>
+  </section>
+
+  <!-- RENNRECHNER -->
+  <section class="tf-page" id="rennen" role="tabpanel" aria-labelledby="tab-rennen" hidden>
+    <div class="tf-filter tf-rr-top">
+      <div class="tf-seg" id="rr-strecke" role="group" aria-label="Distanz"></div>
+      <div class="tf-chipset" id="rr-presets" role="group" aria-label="Vorlagen"></div>
+    </div>
+    <article class="tf-card" id="karte-rr-gesamt">
+      <div class="tf-rr-total">
+        <div>
+          <div class="tf-ctrl-l">Gesamtzeit</div>
+          <div class="tf-result-main"><span class="num" id="rr-gesamt">–</span><span class="tf-pill" id="rr-pill"><i></i><span id="rr-pill-t"></span></span></div>
+          <div class="tf-rr-puffer" id="rr-puffer"></div>
+        </div>
+        <label class="tf-field tf-rr-ziel"><span>Zielzeit</span><input class="tf-input" id="rr-ziel" inputmode="numeric" placeholder="9:00:00"></label>
+      </div>
+      <div class="tf-rr-bar" id="rr-bar" aria-hidden="true"></div>
+      <div class="tf-rr-legs" id="rr-legs"></div>
+      <p class="tf-note" id="rr-annahmen"></p>
+    </article>
+    <article class="tf-card tf-rr-card" id="karte-rr-schwimmen">
+      <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-blue)"><svg class="tf-ico"><use href="#i-swim"/></svg></span><div><h2>Schwimmen</h2><div class="tf-sub" id="rr-swim-sub">Tempo und Intensität zu deiner CSS</div></div><div class="tf-kpi"><span class="num" id="rr-swim-zeit">–</span><div class="tf-kpi-sub" id="rr-swim-pace"></div></div></div>
+      <div class="tf-rr-body"><div class="tf-ctrl" id="rr-swim-ctrl"></div><div class="tf-rr-out"><div class="tf-kv" id="rr-swim-kv"></div><div class="tf-chart" id="chart-rr-swim" style="min-height:190px"></div><div class="tf-caption" id="rr-swim-cap"></div></div></div>
+    </article>
+    <article class="tf-card tf-rr-card" id="karte-rr-rad">
+      <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-orange)"><svg class="tf-ico"><use href="#i-bike"/></svg></span><div><h2>Rad</h2><div class="tf-sub">Leistung, Aerodynamik und Strecke → Zeit (Martin et al. 1998)</div></div><div class="tf-kpi"><span class="num" id="rr-bike-zeit">–</span><div class="tf-kpi-sub" id="rr-bike-kmh"></div></div></div>
+      <div class="tf-rr-body"><div class="tf-ctrl" id="rr-bike-ctrl"></div><div class="tf-rr-out"><div class="tf-kv" id="rr-bike-kv"></div><div class="tf-chart" id="chart-rr-bike" style="min-height:190px"></div><div class="tf-caption" id="rr-bike-cap"></div></div></div>
+      <div class="tf-rr-sub2"><div class="tf-ctrl-l">Watt über die Zeit</div><div class="tf-chart" id="chart-rr-bike-verlauf" style="min-height:170px"></div><div class="tf-caption" id="rr-bike-cap2"></div></div>
+    </article>
+    <article class="tf-card tf-rr-card" id="karte-rr-lauf">
+      <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-mint)"><svg class="tf-ico"><use href="#i-run"/></svg></span><div><h2>Laufen</h2><div class="tf-sub">Pace, Abbau und Intensität zu VT1</div></div><div class="tf-kpi"><span class="num" id="rr-run-zeit">–</span><div class="tf-kpi-sub" id="rr-run-pace"></div></div></div>
+      <div class="tf-rr-body"><div class="tf-ctrl" id="rr-run-ctrl"></div><div class="tf-rr-out"><div class="tf-kv" id="rr-run-kv"></div><div class="tf-chart" id="chart-rr-run" style="min-height:190px"></div><div class="tf-caption" id="rr-run-cap"></div></div></div>
+    </article>
+    <article class="tf-card tf-rr-card" id="karte-rr-fueling">
+      <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-orange)"><svg class="tf-ico"><use href="#i-drop"/></svg></span><div><h2>Verpflegungsplan</h2><div class="tf-sub">Kohlenhydrate und Trinken für Rad und Lauf – passend zu deinen Splits oben</div></div><div class="tf-kpi"><span class="num" id="rr-fu-kh">–</span><span class="tf-u">g KH</span><div class="tf-kpi-sub" id="rr-fu-kh-sub"></div></div></div>
+      <div class="tf-rr-body"><div class="tf-ctrl" id="rr-fu-ctrl"></div><div class="tf-rr-out"><div class="tf-kv" id="rr-fu-kv"></div><div class="tf-chart" id="chart-rr-fu" style="min-height:190px"></div><div class="tf-caption" id="rr-fu-cap"></div></div></div>
+      <div class="tf-rr-sub2"><div class="tf-ctrl-l"><span>Ablauf im Rennen</span><span>Zeiten ab Start der Disziplin</span></div><div class="tf-fu-plan" id="rr-fu-plan"></div><p class="tf-note" id="rr-fu-note"></p></div>
+    </article>
+    <div class="tf-grid" style="margin-top:14px">
+      <article class="tf-card tf-span2" id="karte-rennen">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-pink)"><svg class="tf-ico"><use href="#i-target"/></svg></span><div><h2>Wettkämpfe & Koppeleinheiten</h2><div class="tf-sub">Multisport-Aufzeichnungen mit Zeiten je Disziplin</div></div></div>
+        <div class="tf-table-wrap"><table class="tf-table" id="tabelle-rennen" data-source="rennen" data-row-key="id">
+          <thead><tr><th data-field="datum">Datum</th><th data-field="name">Name</th><th data-field="gesamt" class="r">Gesamt</th><th data-field="schwimmen" class="r tf-hide-s">Schw.</th><th data-field="rad" class="r tf-hide-s">Rad</th><th data-field="lauf" class="r tf-hide-s">Lauf</th></tr></thead><tbody></tbody>
+        </table></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- PROFIL -->
+  <section class="tf-page" id="profil" role="tabpanel" aria-labelledby="tab-profil" hidden>
+    <div class="tf-grid">
+      <article class="tf-card tf-span2" id="karte-profil">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-gray)"><svg class="tf-ico"><use href="#i-user"/></svg></span><div><h2>Athletenprofil</h2><div class="tf-sub">Grundlage aller Rechnungen – Änderungen wirken sofort auf jede Seite</div></div></div>
+        <form class="tf-form" id="profil-form" autocomplete="off">
+          <div class="tf-fieldsets" id="profil-felder"></div>
+          <div class="tf-form-actions"><button class="tf-btn tf-btn-primary" type="submit">Speichern</button><button class="tf-btn tf-btn-plain" id="profil-reset" type="button">Auf Projektwerte zurücksetzen</button><span class="tf-form-msg" id="profil-msg" role="status"></span></div>
+        </form>
+      </article>
+      <article class="tf-card" id="karte-darstellung">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-indigo)"><svg class="tf-ico"><use href="#i-moon"/></svg></span><div><h2>Darstellung</h2><div class="tf-sub">Hell, dunkel oder wie dein Gerät</div></div></div>
+        <div class="tf-seg" id="theme-seg" role="group" aria-label="Darstellung"></div>
+        <h3 class="tf-h3">Als App auf dem iPhone</h3>
+        <p class="tf-note" style="margin-top:4px">In Safari öffnen → Teilen → „Zum Home-Bildschirm“. Danach startet Tagesform wie eine App, ohne Browserleiste.</p>
+      </article>
+      <article class="tf-card" id="karte-daten">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-blue)"><svg class="tf-ico"><use href="#i-sync"/></svg></span><div><h2>Daten & Konto</h2><div class="tf-sub" id="daten-stand">–</div></div></div>
+        <p class="tf-note" style="margin-top:0">Automatisch: jeden Morgen gegen 7–8 Uhr, ein zweites Mal am Vormittag und am Abend. Beim Öffnen holt die App neue Daten, wenn der letzte Abruf älter als zwei Stunden ist. Ohne Netz zeigt sie den zuletzt geladenen Stand.</p>
+        <div class="tf-form-actions">
+          <button class="tf-btn" id="daten-jetzt" type="button">Jetzt aktualisieren</button>
+          <button class="tf-btn tf-btn-plain" id="daten-voll" type="button">12 Monate neu laden</button>
+          <button class="tf-btn tf-btn-plain tf-btn-danger" id="abmelden" type="button">Abmelden</button>
+        </div>
+        <p class="tf-form-msg" id="daten-msg" role="status"></p>
+        <p class="tf-note" id="daten-offline"></p>
+      </article>
+      <article class="tf-card tf-span2" id="karte-push">
+        <div class="tf-card-head"><span class="tf-badge" style="background:var(--tf-red)"><svg class="tf-ico"><use href="#i-bell"/></svg></span><div><h2>Morgen-Push</h2><div class="tf-sub">Jeden Morgen deine Tagesform als Mitteilung – mit Erinnerung an den Check-in</div></div></div>
+        <div class="tf-push">
+          <div>
+            <div class="tf-lw-status"><i class="tf-ampel" id="push-punkt"></i><b id="push-status">Wird geprüft …</b></div>
+            <p class="tf-note" id="push-text"></p>
+            <div class="tf-form-actions" style="margin-top:14px"><button class="tf-btn tf-btn-primary" id="push-an" type="button" hidden>Push aktivieren</button><button class="tf-btn" id="push-test" type="button" hidden>Test senden</button><button class="tf-btn tf-btn-plain tf-btn-danger" id="push-aus" type="button" hidden>Ausschalten</button></div>
+            <p class="tf-form-msg" id="push-msg" role="status" style="margin-top:10px"></p>
+          </div>
+          <div class="tf-push-vorschau" aria-label="Vorschau der Mitteilung">
+            <div class="tf-ctrl-l" style="margin-bottom:8px">So sieht die Mitteilung heute aus</div>
+            <div class="tf-notif"><img src="icons/icon-192.png" alt="" width="38" height="38"><div><div class="tf-notif-h"><b data-source="morgen_push" data-field="titel" data-row="0"></b><span>jetzt</span></div><p data-source="morgen_push" data-field="text" data-row="0"></p></div></div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- METHODIK -->
+  <section class="tf-page" id="methodik" role="tabpanel" aria-labelledby="tab-methodik" hidden>
+    <p class="tf-intro">Jede Zahl auf dieser Seite ist eine offene Rechnung auf deinen Garmin-Daten. Hier steht, wie sie entsteht, wie du sie liest – und auf welcher Studie sie beruht.</p>
+    <div class="tf-methods" id="methoden-liste"></div>
+  </section>
+</div>
+<nav class="tf-bottom" id="bottom-nav" aria-label="Bereiche">
+  <button type="button" data-group="heute"><svg class="tf-ico"><use href="#i-ring"/></svg><span>Heute</span></button>
+  <button type="button" data-group="erholung"><svg class="tf-ico"><use href="#i-heart"/></svg><span>Erholung</span></button>
+  <button type="button" data-group="training"><svg class="tf-ico"><use href="#i-bolt"/></svg><span>Training</span></button>
+  <button type="button" data-group="rennen"><svg class="tf-ico"><use href="#i-flag"/></svg><span>Rennen</span></button>
+  <button type="button" data-group="profil"><svg class="tf-ico"><use href="#i-user"/></svg><span>Profil</span></button>
+</nav>
+<div class="tf-overlay" id="login" hidden>
+  <form class="tf-login" id="login-form">
+    <svg class="tf-login-logo" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="tf-lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#30d158"/><stop offset="1" stop-color="#0a84ff"/></linearGradient></defs><circle cx="12" cy="12" r="8.5" fill="none" stroke="url(#tf-lg2)" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="44 60" transform="rotate(130 12 12)"/><circle cx="12" cy="12" r="2.6" fill="url(#tf-lg2)"/></svg>
+    <h1>Tagesform</h1>
+    <p>Deine Garmin-Daten, sportwissenschaftlich gelesen.</p>
+    <input class="tf-input" id="login-pw" type="password" placeholder="Passwort" autocomplete="current-password" required>
+    <button class="tf-btn tf-btn-primary tf-btn-wide" type="submit">Anmelden</button>
+    <p class="tf-form-msg" id="login-msg" role="status"></p>
+  </form>
+</div>
+<div class="tf-overlay tf-overlay-soft" id="import" hidden>
+  <div class="tf-login"><div class="tf-spinner" aria-hidden="true"></div><h1 style="font-size:22px">Erster Import</h1><p id="import-text">Tagesform holt deine letzten 12 Monate aus Garmin. Das dauert zwei bis drei Minuten – Garmin lässt nur 100 Abrufe pro Minute zu.</p></div>
+</div>
+<div class="tf-toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+<script src="vendor/d3.min.js"></script>
+<script src="shim.js"></script>
+<script src="calcs.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
