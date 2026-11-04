@@ -1,0 +1,181 @@
+/* Tagesform · Tutorial (Version 12)
+   Jede Funktion in einfachen Worten: was sie bringt, wie du sie nutzt und wo du sie findest – sortiert nach Bereich und
+   danach, wie ambitioniert du trainierst (Einsteiger brauchen keinen CdA-Rechner). Dazu eine Tour in 2 Minuten.
+   Ab 60 Jahren (Geburtsjahr im Profil) schlägt Heute die Tour einmal vor. Gespeichert wird nur auf dem Gerät
+   (localStorage tf:tutorial = { gesehen, weg }). */
+(function () {
+  'use strict';
+  const T = window.tfApp;
+  if (!T) return;
+  const { $, el, svgIco, rowsOf } = T.ui;
+  const athlet = () => (rowsOf('athlet') || [])[0] || {};
+  const ALTER_TOUR = 60; // ab diesem Alter schlägt Heute die Tour vor
+  const lesen = () => { try { return JSON.parse(localStorage.getItem('tf:tutorial')) || {}; } catch (e) { return {}; } };
+  const schreiben = (o) => { try { localStorage.setItem('tf:tutorial', JSON.stringify(Object.assign(lesen(), o))); } catch (e) { /* nur Komfort */ } };
+
+  const STUFEN = [[0, 'Einsteiger', 'Das Wichtigste für jeden Tag'], [1, 'Fortgeschritten', 'Dazu Auswertungen und Muster'], [2, 'Leistung', 'Alles – auch Rennrechner, CdA und Fueling']];
+  const BEREICHE = [['start', 'Erste Schritte', 'i-play'], ['heute', 'Heute', 'i-ring'], ['training', 'Training', 'i-bolt'], ['gesundheit', 'Gesundheit', 'i-heart'], ['wissen', 'Wissen & Spiel', 'i-book'], ['profil', 'Profil & Daten', 'i-user']];
+  // [Bereich, Stufe (0 alle, 1 ab Fortgeschritten, 2 Leistung), Name, was es bringt, [So geht's], Ziel (Route oder Aktion), braucht Garmin]
+  const F = [
+    ['start', 0, 'Garmin verbinden', 'Deine Uhr liefert Schlaf, HRV, Ruhepuls und Training – jeden Morgen automatisch.', ['Tippe oben rechts auf dein Profilbild.', 'Wähle „Garmin & Daten“.', 'In Garmin Connect einen Schlüssel erstellen und einfügen – die Anleitung steht direkt dabei.'], 'profil/garmin', false],
+    ['start', 0, 'Als App auf dem Handy', 'Tagesform startet dann wie jede andere App – und kann dir morgens eine Mitteilung schicken.', ['iPhone: in Safari auf „Teilen“ tippen.', '„Zum Home-Bildschirm“ wählen.', 'Tagesform ab jetzt über das neue Symbol öffnen.'], null, false],
+    ['start', 0, 'Über dich', 'Alter, Sportarten und Ziele machen alle Rechnungen persönlich.', ['Profilbild oben rechts → „Über dich“.', 'Geburtsjahr, Sportarten und Wissenslevel eintragen.', 'Für Rad und Laufen zusätzlich im „Athletenprofil“: Gewicht, FTP und Pulsschwellen.'], 'profil/ich', false],
+    ['start', 0, 'Fokus der App', 'Alltag & Energie, Fitness & Gym oder Performance – Tagesform zeigt dann nur, was zu dir passt.', ['Profilbild oben rechts → „Über dich“.', 'Unter „Fokus der App“ wählen.', 'Jederzeit änderbar.'], 'profil/ich', false],
+    ['start', 0, 'Morgen-Push', 'Jeden Morgen deine Tagesform als Mitteilung – ohne die App zu öffnen.', ['Profilbild oben rechts → „Morgen-Push“.', '„Push aktivieren“ antippen und erlauben.', 'Auf dem iPhone geht das nur in der App vom Home-Bildschirm.'], 'profil/push', false],
+
+    ['heute', 0, 'Tagesform', 'Eine Zahl für heute: wie bereit dein Körper ist – aus Schlaf, HRV, Ruhepuls und deinem Gefühl.', ['Grün: Training wie geplant.', 'Gelb: lieber kürzer oder lockerer.', 'Rot: Erholung zuerst. Tippe die Karte an, um die Gründe zu sehen.'], 'heute/tagesform', false],
+    ['heute', 0, 'Check-in am Morgen', 'Fünf Fragen in 20 Sekunden. Dein Gefühl macht die Tagesform genauer – auch ganz ohne Uhr.', ['Auf Heute „Wie geht’s dir heute?“ antippen.', 'Je Frage 1 bis 5 wählen – 5 ist immer der beste Wert.', 'Unten auf „Speichern“ tippen.'], 'gesundheit/checkin', false],
+    ['heute', 0, 'Die Einheit des Tages', 'Oben auf Heute steht, was dein Plan vorsieht – mit Dauer, Zielbereich und Ablauf.', ['Mit „Gestern · Heute · Morgen“ blättern.', '„Details“ zeigt die ganze Einheit im Plan.', 'Gym und Pilates & Yoga startest du direkt mit „Jetzt starten“.'], 'heute', false],
+    ['heute', 0, 'Für gestern nachtragen', 'Vergessen? Bis 12 Uhr kannst du den Check-in oder dein Trinken für gestern nachholen.', ['Vormittags erscheint auf Heute „Gestern vergessen?“.', 'Antippen und wie gewohnt ausfüllen.'], 'heute', false],
+    ['heute', 0, 'Dein Tag', 'Wann Licht, Konzentration, der letzte Kaffee und das Bett am besten passen – aus deinem Schlaf berechnet.', ['Auf Heute die Karte „Dein Tag“ antippen.', 'Jedes Zeitfenster hat ein (i), das erklärt, warum.'], 'heute/tag', false],
+    ['heute', 0, 'Heute notiert', 'Trinken, Eiweiß, Koffein und deine Ergänzungen mit einem Tipp.', ['Auf Heute „Heute notiert“ öffnen.', 'Für ein Glas Wasser auf „+250“, für Eiweiß auf „+20“ tippen.'], 'gesundheit/protokoll', false],
+    ['heute', 0, 'Abend-Check', 'Ab 19 Uhr: zwei Minuten zum Abschalten – Kopf leeren, das Wichtigste für morgen, deine Bettzeit.', ['Erscheint abends von selbst auf Heute.', 'Notizen bleiben nur auf deinem Gerät.'], 'heute', false],
+    ['heute', 1, 'Startseite anpassen', 'Pinne bis zu vier Karten an, die du immer oben sehen willst.', ['Ganz unten auf Heute „Startseite anpassen“.', 'Die Stecknadel bei deinen Lieblingskarten antippen.'], 'heute', false],
+
+    ['training', 0, 'Mein Plan', 'Fünf Fragen – dann plant Tagesform jede Woche für dich, passend zu Ziel, Zeit und Tagesform.', ['Unten auf „Training“ → „Plan erstellen“.', 'Sportarten, Ziel, Zeit und Erfahrung wählen.', 'Im „Feinschliff“ kannst du Entlastung, Kraft und Tests genauer einstellen.'], 'training/plan', false],
+    ['training', 0, 'Tage verschieben', 'Passt ein Tag nicht? Tausch ihn – der Plan achtet darauf, dass keine zwei harten Tage nebeneinander liegen.', ['Im Plan eine Einheit nach rechts wischen oder „Verschieben“ antippen.', 'Zieltag wählen: nur diese Woche oder ab jetzt.'], 'training/plan', false],
+    ['training', 0, 'In deinen Kalender', 'Deine Einheiten als Termine in Apple Kalender, Google oder Outlook.', ['Training → „Mein Plan“ → „In Kalender“.', 'Zeitraum, Uhrzeit und Erinnerung wählen, dann „Exportieren“.', 'iPhone: „Alle hinzufügen“ antippen, am besten in einen eigenen Kalender „Training“. Ändert sich dein Plan: dort die alten Termine entfernen und neu exportieren.'], 'kalender', false],
+    ['training', 0, 'Gym', 'Muskeln antippen, Workout bekommen, Sätze abhaken – mit Gewicht und Pause.', ['Training → „Gym“.', 'Auf der Körperkarte die Muskeln antippen.', '„Workout starten“: Gewicht und Wiederholungen eintragen, „Satz geschafft“ antippen.'], 'training/gym', false],
+    ['training', 0, 'Pilates & Yoga', 'Geführte Einheiten mit Timer und Atemkreis – und 5-Minuten-Routinen für zwischendurch.', ['Training → „Pilates & Yoga“.', 'Anlass wählen (Rücken, Hüfte, Entspannung …).', '„Einheit zeigen“ und dem Timer folgen.'], 'training/flow', false],
+    ['training', 0, 'Laufen', 'Das Laufbudget schützt vor „zu viel zu schnell“, dazu Schrittfrequenz und Effizienz.', ['Training → „Ausdauer“ → „Laufen“.', 'Rot heißt: diese Woche schon mehr als dein Budget.'], 'training/laufen', true],
+    ['training', 1, 'Kraftwerte & Deload', 'Aus deinen Sätzen schätzt Tagesform deine Maximalkraft – und schlägt eine leichtere Woche vor, wenn es stockt.', ['Sätze im Gym immer mit Gewicht eintragen.', 'Unter jeder Übung steht dein Verlauf; (i) erklärt das Gewicht.'], 'training/gym', false],
+    ['training', 1, 'Rad', 'FTP, Leistungskurve und Effizienz – für alle mit Wattmessung.', ['Training → „Ausdauer“ → „Rad“.', 'Deine FTP trägst du im Athletenprofil ein oder testest sie im Plan.'], 'training/rad', true],
+    ['training', 1, 'Schwimmen', 'Tempo, Technik und dein Schwellentempo (CSS).', ['Training → „Ausdauer“ → „Schwimmen“.', 'Einen CSS-Test kannst du direkt dort eintragen.'], 'training/schwimmen', true],
+    ['training', 1, 'Fitness & Form', 'Wie fit du bist und wie frisch – wichtig für gutes Timing vor einem Rennen.', ['Training → „Ausdauer“ → „Fitness & Form“.', 'Form im Plus heißt: ausgeruht.'], 'training/form', true],
+    ['training', 1, 'Belastungssprünge', 'Warnt, wenn deine Last schneller steigt, als der Körper mitkommt.', ['Training → „Ausdauer“ → „Belastungssprünge“.', 'Über 1,5 lieber eine ruhigere Woche einlegen.'], 'training/last', true],
+    ['training', 1, 'Einheiten-Check', 'Prüft jede Einheit: War locker wirklich locker, hart wirklich hart?', ['Training → „Ausdauer“ → „Einheiten-Check“.'], 'training/einheiten', true],
+    ['training', 1, 'Saison & Rennen', 'Rennen eintragen – mit Countdown, Phasen und Tapering.', ['Training → „Ausdauer“ → „Saison“.', 'Rennen mit Datum und Distanz anlegen.'], 'training/saison', false],
+    ['training', 1, 'Material', 'Kette wachsen, Laufschuh-Kilometer – zählt mit Garmin automatisch mit.', ['Training → „Ausdauer“ → „Material“.'], 'training/material', false],
+    ['training', 2, 'Rennrechner', 'Zielzeit rein – Splits, Watt, Tempo und Verpflegung raus.', ['Training → „Ausdauer“ → „Rennrechner“.', 'Distanz wählen und Zielzeiten anpassen.'], 'training/rechner', false],
+    ['training', 2, 'Renntag-Karte', 'Alle Splits, Watt-Grenzen und Verpflegungszeiten auf einer Karte – zum Ausdrucken, dazu die Packliste.', ['Training → „Ausdauer“ → „Renntag“.'], 'training/renntag', false],
+    ['training', 2, 'Werkzeuge: W/kg, CdA, TSS', 'Kleine Rechner für Leistung, Aerodynamik und Trainingsbelastung.', ['Training → „Ausdauer“ → „Werkzeuge“.'], 'training/werkzeuge', false],
+    ['training', 2, 'Fueling', 'Wie viele Kohlenhydrate pro Stunde du in langen Einheiten aufnimmst.', ['Training → „Ausdauer“ → „Fueling“.'], 'training/fueling', true],
+    ['training', 2, 'Schweißrate', 'Wiegen vor und nach dem Training – die Grundlage für dein Trinken im Rennen.', ['Training → „Ausdauer“ → „Schweißrate“.', 'Test eintragen: Gewicht vorher, nachher, getrunken.'], 'training/schweiss', false],
+
+    ['gesundheit', 0, 'Gesundheitsbild', 'Zwölf Werte gegen dein eigenes Normal – auf einen Blick, mit den zwei wichtigsten Tipps.', ['Unten auf „Gesundheit“.'], 'gesundheit', false],
+    ['gesundheit', 0, 'Schlaf', 'Dauer, Phasen, Rhythmus und Schlafschuld.', ['Gesundheit → „Schlaf“.'], 'gesundheit/schlaf', true],
+    ['gesundheit', 0, 'Schritte & Stress', 'Dein Tagesziel, Bewegung im Alltag, Stress und Body Battery.', ['Gesundheit → „Schritte & Bewegung“ oder „Alltag & Stress“.'], 'gesundheit/aktivitaet', false],
+    ['gesundheit', 0, 'Frühwarnung & Pause', 'Tagesform warnt oft, bevor du dich krank fühlst. Im Pause-Modus ist deine Serie geschützt.', ['Bei einer Warnung erscheint sie oben auf Heute.', 'Krank oder Auszeit? Pause-Modus starten – Quests werden zu Erholungs-Quests.'], 'pause', false],
+    ['gesundheit', 0, 'Fitness-Alter', 'Wie alt dein Körper wirkt – aus Ausdauer und Ruhepuls geschätzt.', ['Gesundheit → „Fitness-Alter“.', 'Dafür braucht es dein Geburtsjahr im Profil.'], 'gesundheit/fitness', false],
+    ['gesundheit', 1, 'HRV & Ruhepuls', 'Wie erholt dein Nervensystem ist – mit deinem persönlichen Korridor.', ['Gesundheit → „HRV im Verlauf“.', 'Ein einzelner Tag ist kein Grund zur Sorge – achte auf mehrere Tage.'], 'gesundheit/hrv', true],
+    ['gesundheit', 1, 'Was dich beeinflusst', 'Welche Gewohnheiten dir guttun und welche Energie rauben – aus deinen eigenen Daten.', ['Gesundheit → „Was dich beeinflusst“.', 'Je mehr du notierst, desto eher zeigen sich Muster (meist nach 3–4 Wochen).'], 'gesundheit/einfluss', false],
+    ['gesundheit', 1, 'Deine Trends', 'Was sich über 30, 90 und 365 Tage verändert hat – ruhig, ohne täglichen Alarm.', ['Gesundheit → „Deine Trends“.'], 'gesundheit/trends', false],
+    ['gesundheit', 2, 'Laborwerte', 'Nur zum Mitschreiben – mit dem Referenzbereich deines Labors, ohne Bewertung.', ['Gesundheit → „Laborwerte“.'], 'gesundheit/labor', false],
+
+    ['wissen', 0, 'Lexikon & Fragen', 'Jeder Begriff einfach erklärt – in der App kannst du unterstrichene Wörter antippen.', ['Unten auf „Wissen“.', 'Oben suchen oder ein Thema wählen.'], 'wissen', false],
+    ['wissen', 0, 'Merkliste', 'Artikel und Fragen für später speichern – auf allen Geräten.', ['Im Artikel auf „Merken“ tippen.', 'Wiederfinden unter Wissen → „Gemerkt“.'], 'wissen', false],
+    ['wissen', 0, 'Quests & XP', 'Jeden Tag drei kleine Aufgaben. Alles, was dir guttut, bringt XP – auch Schritte und Schlaf.', ['Profilbild oben rechts → „Quests“.'], 'profil/quests', false],
+    ['wissen', 0, 'Trophy Road & Trophäen', 'Level, Abzeichen und Banner – einmal erreicht, bleiben sie.', ['Profilbild oben rechts → „Trophy Road“.'], 'profil/road', false],
+    ['wissen', 1, 'Mini-Experimente', '7 Tage eine Sache ausprobieren – danach zeigen deine Daten, was es gebracht hat.', ['Wissen → „Mini-Experimente“.', 'Experiment starten; der Check-in fragt jeden Morgen nach.'], 'wissen', false],
+
+    ['profil', 0, 'Profilbild & Banner', 'Dein Bild oben rechts – mit Rahmen deiner Stufe.', ['Profilbild oben rechts → „Profilbild & Banner“.'], 'profil/avatar', false],
+    ['profil', 0, 'Darstellung', 'Hell, dunkel oder wie dein Gerät.', ['Profilbild oben rechts → „Darstellung“.'], 'profil/darstellung', false],
+    ['profil', 0, 'Deine Daten', 'Alles herunterladen oder dein Konto mit allen Daten löschen.', ['Profilbild oben rechts → „Konto & Datenschutz“.'], 'profil/konto', false],
+    ['profil', 1, 'Teilen', 'Tagesform mit Freunden teilen – jede Person nutzt ihr eigenes Konto.', ['Profilbild oben rechts → „Teilen“.'], 'profil/teilen', false],
+  ];
+
+  function stufeStandard() {
+    const a = athlet(), w = a.wissen, m = window.tfAlltag && tfAlltag.modus ? tfAlltag.modus() : null;
+    if (w === 'profi' || m === 'performance') return 2;
+    if (w === 'einsteiger' || m === 'alltag') return 0;
+    return 1;
+  }
+  let stufe = null;
+  function oeffne(ziel) {
+    if (!ziel) return;
+    if (ziel === 'pause') { if (window.tfTageslauf && tfTageslauf.pauseBlatt) tfTageslauf.pauseBlatt(); return; }
+    if (ziel === 'kalender') { if (window.tfPlan && tfPlan.hat && tfPlan.hat() && tfPlan.kalender) { tfPlan.kalender(); return; } T.geh('training/plan'); return; }
+    T.geh(ziel);
+  }
+
+  /* ---------- Seite „Tutorial“ ---------- */
+  function render() {
+    const box = $('#tutorial-box'); if (!box) return;
+    if (stufe == null) stufe = stufeStandard();
+    const ohne = T.ohne ? T.ohne() : false;
+    const kopf = el('article', { class: 'tf-card tf-held tf-buehne tf-b-plan tf-tut-kopf' },
+      el('span', { class: 'tf-augenbraue', text: 'Tutorial' }),
+      el('h2', { class: 'tf-held-t', text: 'Tagesform in 2 Minuten.' }),
+      el('p', { class: 'tf-held-f', text: 'Die Tour zeigt dir Schritt für Schritt, was die App kann. Darunter steht jede Funktion einzeln – mit „So geht’s“ und einem Knopf, der dich direkt hinbringt.' }));
+    const los = el('button', { type: 'button', class: 'tf-btn tf-held-los' }, svgIco('i-play'), ' Tour starten');
+    los.addEventListener('click', tour);
+    kopf.appendChild(el('div', { class: 'tf-held-k' }, los));
+    const sg = el('div', { class: 'tf-seg tf-tut-stufe', role: 'group', 'aria-label': 'Wie ambitioniert trainierst du?' });
+    STUFEN.forEach(([v, t]) => { const b = el('button', { type: 'button', 'aria-pressed': String(stufe === v) }, t); b.addEventListener('click', () => { stufe = v; render(); }); sg.appendChild(b); });
+    const frag = [kopf, el('div', { class: 'tf-field tf-tut-filter' }, el('span', { text: 'Zeig mir die Funktionen für' }), sg, el('small', { class: 'tf-ich-hint', text: STUFEN[stufe][2] + ' · ' + F.filter((f) => f[1] <= stufe).length + ' von ' + F.length + ' Funktionen' }))];
+    BEREICHE.forEach(([id, name, icon]) => {
+      const L = F.filter((f) => f[0] === id && f[1] <= stufe); if (!L.length) return;
+      frag.push(el('h2', { class: 'tf-hub-sek', id: 'tut-' + id }, name, el('small', { text: L.length === 1 ? '1 Funktion' : L.length + ' Funktionen' })));
+      frag.push(el('div', { class: 'tf-faqs tf-tut-liste' }, ...L.map(([, st, titel, kurz, schritte, ziel, garmin]) => {
+        const d = el('details', { class: 'tf-faq tf-tut' });
+        d.appendChild(el('summary', null, el('span', { class: 'tf-tut-s' }, svgIco(icon), el('span', null, el('b', { text: titel }), el('small', { text: kurz }))), svgIco('i-chev')));
+        const body = el('div', { class: 'tf-faq-a' }, el('p', { class: 'tf-tut-h', text: 'So geht’s' }), el('ol', { class: 'tf-w-liste tf-tut-schritte' }, ...schritte.map((t) => el('li', { text: t }))));
+        const fuss = el('div', { class: 'tf-form-actions tf-tut-fuss' });
+        if (ziel) { const b = el('button', { type: 'button', class: 'tf-btn tf-btn-primary tf-btn-klein' }, 'Hinbringen'); b.addEventListener('click', () => oeffne(ziel)); fuss.appendChild(b); }
+        const tags = [st === 1 ? 'ab Fortgeschritten' : st === 2 ? 'für Leistung' : null, garmin ? (ohne ? 'braucht Garmin' : 'mit Garmin') : null].filter(Boolean);
+        if (tags.length) fuss.appendChild(el('small', { class: 'tf-tut-tag', text: tags.join(' · ') }));
+        body.appendChild(fuss);
+        d.appendChild(body);
+        return d;
+      })));
+    });
+    frag.push(el('div', { class: 'tf-links', style: 'margin-top:18px' }, T.ui.zeile('wissen/methodik', 'So rechnet Tagesform', 'i-book', 'gold', 'Jede Kennzahl mit Formel, Deutung und Studie')));
+    box.replaceChildren(el('div', { class: 'tf-hub tf-tut-seite' }, ...frag));
+  }
+
+  /* ---------- Tour in 2 Minuten: sechs Karten im Blatt ---------- */
+  const TOUR = [
+    ['Willkommen.', 'Tagesform zeigt dir jeden Tag, wie bereit dein Körper ist – und was heute sinnvoll ist. Unten wechselst du zwischen Heute, Training, Gesundheit und Wissen; dein Profil ist das Bild oben rechts.', 'heute', 'b-plan'],
+    ['Deine Tagesform.', 'Eine Zahl von 1 bis 100 aus Schlaf, HRV, Ruhepuls und deinem Gefühl. Grün heißt: Training wie geplant. Gelb: lieber lockerer. Rot: Erholung zuerst. Der Check-in am Morgen dauert 20 Sekunden und macht sie genauer.', 'gesundheit/checkin', 'b-blau'],
+    ['Dein Plan.', 'Sag Tagesform Ziel, Zeit und Sportarten – du bekommst jede Woche fertig geplant. Oben auf Heute steht immer die Einheit des Tages. Mit einem Tipp landen alle Termine in deinem Kalender.', 'training/plan', 'b-daemmer'],
+    ['Training.', 'Unter Training findest du Gym (Muskeln antippen, Sätze abhaken), Pilates & Yoga (geführt mit Timer) und Ausdauer (Laufen, Rad, Schwimmen und alle Auswertungen).', 'training', 'b-pink'],
+    ['Gesundheit.', 'Schlaf, HRV, Ruhepuls, Schritte und Stress – immer gegen dein eigenes Normal. „Was dich beeinflusst“ zeigt mit der Zeit, welche Gewohnheiten dir guttun.', 'gesundheit', 'b-flieder'],
+    ['Wissen & Hilfe.', 'Jeder Begriff ist einfach erklärt. Hier im Tutorial steht jede Funktion mit „So geht’s“ – du findest es immer unter Wissen ganz unten.', 'wissen/tutorial', 'b-tinte'],
+  ];
+  function tour(start) {
+    let i = Number.isInteger(start) ? start : 0;
+    const box = el('div', { class: 'tf-rm tf-tour' });
+    const malen = () => {
+      const [titel, text, ziel, farbe] = TOUR[i];
+      const punkte = el('div', { class: 'tf-tour-p', 'aria-hidden': 'true' }, ...TOUR.map((_, k) => el('i', { class: k === i ? 'an' : k < i ? 'war' : '' })));
+      const karte = el('div', { class: 'tf-held tf-buehne tf-' + farbe + ' tf-tour-k' }, el('span', { class: 'tf-augenbraue', text: 'Schritt ' + (i + 1) + ' von ' + TOUR.length }), el('h2', { class: 'tf-held-t', id: 'sheet-titel', text: titel }), el('p', { class: 'tf-held-f', text }));
+      const zur = el('button', { type: 'button', class: 'tf-btn tf-btn-plain', disabled: i === 0 }, 'Zurück');
+      zur.addEventListener('click', () => { i = Math.max(0, i - 1); malen(); });
+      const zeig = el('button', { type: 'button', class: 'tf-btn' }, 'Zeig es mir');
+      zeig.addEventListener('click', () => { schreiben({ gesehen: new Date().toISOString().slice(0, 10) }); if (window.tfWissen) tfWissen.schliessen(); oeffne(ziel); });
+      const vor = el('button', { type: 'button', class: 'tf-btn tf-btn-primary' }, i === TOUR.length - 1 ? 'Fertig' : 'Weiter');
+      vor.addEventListener('click', () => { if (i < TOUR.length - 1) { i += 1; malen(); return; } schreiben({ gesehen: new Date().toISOString().slice(0, 10) }); if (window.tfWissen) tfWissen.schliessen(); T.neu(); });
+      box.replaceChildren(punkte, karte, el('div', { class: 'tf-form-actions tf-tour-a' }, vor, zeig, zur));
+    };
+    malen();
+    if (window.tfWissen && tfWissen.blatt) tfWissen.blatt(box);
+  }
+
+  /* ---------- Heute: ab 60 Jahren einmal die Tour vorschlagen ---------- */
+  function alter() { const g = +athlet().geburtsjahr; return g > 1900 ? new Date().getFullYear() - g : null; }
+  function vorschlag() {
+    const box = $('#home-tutorial'); if (!box) return;
+    const st = lesen(), a = alter();
+    if (a == null || a < ALTER_TOUR || st.gesehen || st.weg) { box.replaceChildren(); return; }
+    const los = el('button', { type: 'button', class: 'tf-btn tf-held-los' }, svgIco('i-play'), ' Tour starten');
+    los.addEventListener('click', () => tour(0));
+    const spaeter = el('button', { type: 'button', class: 'tf-btn tf-held-det' }, 'Nein, danke');
+    spaeter.addEventListener('click', () => { schreiben({ weg: new Date().toISOString().slice(0, 10) }); box.replaceChildren(); });
+    box.replaceChildren(el('article', { class: 'tf-card tf-held tf-buehne tf-b-flieder', id: 'karte-tutorial' },
+      el('span', { class: 'tf-augenbraue', text: 'Neu in Tagesform?' }),
+      el('h2', { class: 'tf-held-t', text: 'In 2 Minuten erklärt.' }),
+      el('p', { class: 'tf-held-f', text: 'Wir zeigen dir Schritt für Schritt, was die App kann – in Ruhe und in einfachen Worten. Du findest die Tour später jederzeit unter Wissen → Tutorial.' }),
+      el('div', { class: 'tf-held-k' }, los, spaeter)));
+  }
+
+  // „So rechnet Tagesform“: oben ein Weg zu den Funktionen
+  function methodikLink() {
+    const box = $('#methodik-tutorial'); if (!box || box.childElementCount) return;
+    box.appendChild(T.ui.zeile('wissen/tutorial', 'Tutorial: jede Funktion erklärt', 'i-question', 'blue', 'Was die App kann und wie du es nutzt – nach Anspruch sortiert'));
+  }
+
+  T.seite('tutorial', render);
+  T.zusatz('heute', vorschlag);
+  T.zusatz('methodik', methodikLink);
+  window.tfTutorial = { tour, F, BEREICHE, ALTER_TOUR };
+})();
