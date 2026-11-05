@@ -1,0 +1,173 @@
+/* Tagesform · Startseite (Version 10, ergänzt in 11 und 12)
+   1. Karten, die mit der Tageszeit atmen: Morgens stehen Check-in, Tagesform und dein Plan oben, tagsüber dein Tag,
+      ab 19 Uhr rücken Trainings-Empfehlung und Plan nach unten – oben stehen dann Abend-Rückblick und Schlafenszeit.
+   2. Favoriten: Mit der Stecknadel bestimmst du bis zu 4 Bereiche, die immer ganz oben stehen. Alles andere liegt
+      aufgeräumt unter „Alle Kategorien einblenden“. Gespeichert in rechner.start (geräteübergreifend).
+   Hinweise, die wichtig sind (Check-in, Frühwarnung, Pause-Modus), bleiben immer oben und lassen sich nicht wegklappen. */
+(function () {
+  'use strict';
+  const T = window.tfApp;
+  if (!T) return;
+  const { el, svgIco } = T.ui;
+  const A = () => dash.app;
+  const q = (s) => document.querySelector('#heute ' + s);
+
+  // Bausteine: Kennung, Name, Symbol, Knoten (Überschrift gehört zu ihrem Inhalt)
+  const TEILE = [
+    ['tagesform', 'Tagesform & Kennzahlen', 'i-ring', () => [q('.tf-home-top')]],
+    ['wichtig', 'Heute wichtig (von gestern Abend)', 'i-list', () => [q('#home-morgen')]],
+    ['abend', 'Abend-Check & Schlafenszeit', 'i-moon', () => [q('#home-abend')]],
+    ['mittag', 'Nachmittagstief', 'i-coffee', () => [q('#home-mittag')]],
+    ['tag', 'Dein Tag', 'i-sun', () => [q('#home-tag')]],
+    ['notiert', 'Wasser, Protein & Koffein', 'i-glass', () => [q('#home-notiert')]],
+    ['spiel', 'Level & Quests', 'i-star', () => [q('#home-spiel')]],
+    ['plan', 'Heute im Plan', 'i-cal', () => [q('#home-plan')]],
+    ['hinweise', 'Tipps & Wissen für heute', 'i-book', () => [q('#home-hinweise2')]],
+    ['rueckblick', 'Rückblicke', 'i-karten', () => [q('#home-rueckblick')]],
+    ['bereiche', 'Bereiche', 'i-list', () => { const n = q('#home-apps'); return [n && n.previousElementSibling && n.previousElementSibling.matches('h2') ? n.previousElementSibling : null, n]; }],
+    ['empfehlung', 'Empfehlung fürs Training', 'i-target', () => [q('#karte-empfehlung')]],
+    ['erkenntnisse', 'Was deine Daten sagen', 'i-muster', () => [q('#erkenntnisse-heute-titel'), q('#erkenntnisse-heute')]],
+  ];
+  const NAME = Object.fromEntries(TEILE.map((t) => [t[0], t]));
+  const FEST = ['#home-zurueck', '#checkin-banner', '#home-tutorial', '#home-planbanner', '#profil-banner', '#home-hinweise', '#home-pause', '#home-nachtrag', '#home-schnell']; // immer oben (Version 11: Willkommen zurück; Pause und Warnungen vor Nachtragen und Schnellstart)
+  const MAX_PINS = 4;
+  // Reihenfolge je Tageszeit – was gerade dran ist, steht oben
+  const ZEIT = {
+    morgen: ['plan', 'tagesform', 'wichtig', 'tag', 'notiert', 'spiel', 'hinweise', 'empfehlung', 'rueckblick', 'bereiche', 'erkenntnisse', 'mittag', 'abend'], // Version 12: die Einheit zuerst, dann die Erholung (wie im Clubhouse)
+    tag: ['plan', 'tagesform', 'wichtig', 'mittag', 'tag', 'notiert', 'spiel', 'empfehlung', 'hinweise', 'rueckblick', 'bereiche', 'erkenntnisse', 'abend'],
+    abend: ['abend', 'wichtig', 'tag', 'notiert', 'spiel', 'rueckblick', 'hinweise', 'tagesform', 'plan', 'bereiche', 'empfehlung', 'erkenntnisse', 'mittag'],
+  };
+  const tageszeit = (d) => { const h = (d || new Date()).getHours(); return h >= 19 || h < 4 ? 'abend' : h < 11 ? 'morgen' : 'tag'; };
+
+  function einstellung() {
+    const s = (A().state.rechner || {}).start;
+    const pins = s && Array.isArray(s.pins) ? s.pins.filter((p) => NAME[p]).slice(0, MAX_PINS) : [];
+    return { pins, zeit: !(s && s.zeit === false) };
+  }
+  let saveT = null;
+  function speichern(neu) {
+    A().setRechner(Object.assign({}, A().state.rechner || {}, { start: neu }));
+    clearTimeout(saveT);
+    saveT = setTimeout(() => A().api('POST', '/api/rechner', { start: neu }).catch((e) => A().toast('Nicht gespeichert: ' + e.message)), 400);
+  }
+  let offen = false; // „Alle Kategorien“ aufgeklappt (bis zum nächsten Öffnen der App)
+
+  function ordnen() {
+    const sec = document.getElementById('heute'); if (!sec) return;
+    const E = einstellung(), zeit = tageszeit();
+    sec.dataset.tageszeit = zeit;
+    // Version 11: Morgens liegt der Fokus auf dem Check-in – größer und ganz oben (ohne Tastatur-Fokus, der nur einen Rahmen zeichnen würde)
+    const ckB = q('#checkin-banner');
+    if (ckB) {
+      const fokus = zeit === 'morgen' && !ckB.hidden;
+      ckB.classList.toggle('tf-banner-fokus', fokus);
+    }
+    const reihe = (E.zeit ? ZEIT[zeit] : ZEIT.tag).filter((id) => !E.pins.includes(id));
+    const knoten = (id) => NAME[id][3]().filter(Boolean);
+    const bekannt = new Set();
+    FEST.forEach((s) => { const n = q(s); if (n) bekannt.add(n); });
+    TEILE.forEach((t) => knoten(t[0]).forEach((n) => bekannt.add(n)));
+    let kopf = sec.querySelector('.tf-start-kopf'), trenner = sec.querySelector('.tf-start-alle'), fuss = sec.querySelector('.tf-start-fuss');
+    if (!kopf) kopf = el('div', { class: 'tf-start-kopf' });
+    if (!trenner) trenner = el('div', { class: 'tf-start-alle' });
+    if (!fuss) fuss = el('div', { class: 'tf-start-fuss' });
+    const fremd = [...sec.children].filter((n) => !bekannt.has(n) && n !== kopf && n !== trenner && n !== fuss);
+    // Kopf über den Favoriten
+    kopf.replaceChildren();
+    if (E.pins.length) {
+      const b = el('button', { type: 'button', class: 'tf-btn tf-btn-plain tf-btn-klein' }, 'Bearbeiten');
+      b.addEventListener('click', anpassen);
+      kopf.append(el('h2', { class: 'tf-start-t' }, svgIco('i-nadel'), ' Favoriten'), b);
+    }
+    // Trenner „Alle Kategorien“
+    trenner.replaceChildren();
+    if (E.pins.length) {
+      const b = el('button', { type: 'button', class: 'tf-start-alle-b', 'aria-expanded': String(offen) }, el('span', { text: offen ? 'Alle Kategorien' : 'Alle Kategorien einblenden' }), svgIco('i-chev'));
+      b.addEventListener('click', () => { offen = !offen; ordnen(); if (offen) b.scrollIntoView({ block: 'start', behavior: 'smooth' }); });
+      trenner.appendChild(b);
+    }
+    const anpassK = el('button', { type: 'button', class: 'tf-btn tf-btn-plain tf-start-anpassen' }, svgIco('i-nadel'), ' Startseite anpassen');
+    anpassK.addEventListener('click', anpassen);
+    fuss.replaceChildren(anpassK, el('small', { text: E.zeit ? zeitText(zeit) : 'Feste Reihenfolge' }));
+    // neu aufbauen: feste Hinweise · Favoriten · Trenner · Rest nach Tageszeit · Fremdes · Fuß
+    const folge = [];
+    FEST.forEach((s) => { const n = q(s); if (n) folge.push(n); });
+    if (E.pins.length) folge.push(kopf);
+    E.pins.forEach((id) => knoten(id).forEach((n) => { n.classList.remove('tf-start-zu'); n.classList.add('tf-start-pin'); folge.push(n); }));
+    if (E.pins.length) folge.push(trenner);
+    reihe.forEach((id) => knoten(id).forEach((n) => { n.classList.remove('tf-start-pin'); n.classList.toggle('tf-start-zu', !!E.pins.length && !offen); folge.push(n); }));
+    fremd.forEach((n) => folge.push(n));
+    folge.push(fuss);
+    // nur umhängen, was nicht schon an der richtigen Stelle steht (Fokus und Scroll bleiben ruhig)
+    let vor = null;
+    folge.forEach((n) => { const soll = vor ? vor.nextSibling : sec.firstChild; if (n !== soll) sec.insertBefore(n, soll); vor = n; });
+  }
+  const zeitText = (z) => (z === 'morgen' ? 'Morgens: Check-in, Tagesform und dein Plan zuerst' : z === 'abend' ? 'Abends: Rückblick und Schlafenszeit zuerst' : 'Tagsüber: dein Tag und dein Plan zuerst');
+
+  // Blatt „Startseite anpassen“: Stecknadeln setzen, Reihenfolge nach Tageszeit an/aus
+  function anpassen() {
+    const E = einstellung(), pins = E.pins.slice();
+    let zeit = E.zeit;
+    const box = el('div', { class: 'tf-rm tf-start-blatt' });
+    const liste = el('div', { class: 'tf-start-l' });
+    const hinweis = el('p', { class: 'tf-note' });
+    const malen = () => {
+      liste.replaceChildren(...TEILE.map(([id, name, icon]) => {
+        const an = pins.includes(id), voll = !an && pins.length >= MAX_PINS;
+        const b = el('button', { type: 'button', class: 'tf-start-z' + (an ? ' an' : ''), 'aria-pressed': String(an), disabled: voll },
+          el('span', { class: 'tf-zeile-ico', style: '--c:var(--tf-' + (an ? 'pink' : 'blue') + ')' }, svgIco(icon)),
+          el('span', { class: 'tf-start-zn' }, el('b', { text: name }), an ? el('small', { text: 'Favorit ' + (pins.indexOf(id) + 1) }) : null),
+          el('span', { class: 'tf-start-nadel', 'aria-hidden': 'true' }, svgIco('i-nadel')));
+        b.addEventListener('click', () => { const i = pins.indexOf(id); if (i >= 0) pins.splice(i, 1); else if (pins.length < MAX_PINS) pins.push(id); malen(); });
+        return b;
+      }));
+      hinweis.textContent = pins.length ? pins.length + ' von ' + MAX_PINS + ' Favoriten – sie stehen in dieser Reihenfolge ganz oben. Alles andere liegt unter „Alle Kategorien einblenden“.' : 'Tippe auf bis zu ' + MAX_PINS + ' Bereiche, die immer ganz oben stehen sollen.';
+    };
+    const sw = el('label', { class: 'tf-switch' }, el('input', { type: 'checkbox', checked: zeit }), el('span', { class: 'tf-switch-ui' }), el('span', null, 'Nach Tageszeit ordnen', el('small', { text: 'Morgens Check-in und Plan, abends Rückblick und Schlafenszeit zuerst' })));
+    sw.querySelector('input').addEventListener('change', (e) => { zeit = e.target.checked; });
+    const ok = el('button', { type: 'button', class: 'tf-btn tf-btn-primary' }, 'Fertig');
+    ok.addEventListener('click', () => { speichern({ pins: pins.slice(0, MAX_PINS), zeit }); offen = false; if (window.tfWissen) tfWissen.schliessen(); ordnen(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    const weg = el('button', { type: 'button', class: 'tf-btn tf-btn-plain' }, 'Alle Favoriten entfernen');
+    weg.addEventListener('click', () => { pins.splice(0, pins.length); malen(); });
+    malen();
+    box.append(el('h2', { class: 'tf-rm-t', id: 'sheet-titel', text: 'Startseite anpassen' }), el('p', { class: 'tf-rm-sub', text: 'Mit der Stecknadel legst du fest, was ganz oben steht.' }), liste, hinweis, sw, el('div', { class: 'tf-form-actions' }, ok, weg));
+    if (window.tfWissen && tfWissen.blatt) tfWissen.blatt(box);
+  }
+
+  // zur vollen Stunde neu ordnen, wenn die Tageszeit wechselt (App bleibt oft lange offen)
+  let zuletzt = tageszeit();
+  setInterval(() => { const z = tageszeit(); if (z !== zuletzt) { zuletzt = z; if (T.tab && T.tab() === 'heute') T.neu(); } }, 60 * 1000);
+
+  /* ---------- Version 12: Tagesform als Punktmatrix (wie eine Anzeigetafel) und die letzten 7 Tage als Punktsäulen ---------- */
+  function heldMatrix() {
+    const S = window.tfSeiten, ziel = document.getElementById('home-matrix'), sae = document.getElementById('home-saeulen');
+    if (!S || !S.punktMatrix || !ziel) return;
+    const w = (document.getElementById('home-wert') || {}).textContent || '–', zahl = /^\d+$/.test(w.trim());
+    ziel.replaceChildren(S.punktMatrix(zahl ? w.trim() : '–'));
+    const u = document.getElementById('home-matrix-u'); if (u) u.hidden = !zahl;
+    if (sae) {
+      const E = T.ui.rowsOf('erholung') || [], h = T.ui.localDate(), V = [];
+      for (let i = 6; i >= 0; i--) { const d = new Date(Date.parse(h + 'T12:00:00Z') - i * 864e5).toISOString().slice(0, 10), r = E.find((x) => x.date === d); V.push(r && r.score != null ? +r.score : null); }
+      sae.replaceChildren(V.some((v) => v != null) ? S.punktSaeulen(V, 100) : document.createTextNode(''));
+    }
+  }
+  /* ---------- Version 12: Seitenleiste am Laptop – Datum, Nordstern (die eine Zahl, auf die du hinarbeitest), Verbindung ---------- */
+  const DATUM = new Intl.DateTimeFormat('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  function seitenleiste() {
+    const d = document.getElementById('seite-datum'); if (d) d.textContent = DATUM.format(new Date());
+    const v = document.getElementById('seite-verbindung'); if (v) v.textContent = (T.ohne && T.ohne() ? 'Ohne Garmin' : 'Garmin verbunden') + ' · nur für dich';
+    const n = document.getElementById('nordstern'), S = window.tfSeiten; if (!n || !S || !S.punktMatrix) return;
+    const a = (T.ui.rowsOf('athlet') || [])[0] || {}, FA = T.ui.rowsOf('fitness_alter'), fa = FA && FA[FA.length - 1];
+    let wert = null, u = '', sub = '';
+    if (a.ftp_ref_w && (!window.tfAlltag || !tfAlltag.modus || tfAlltag.modus() !== 'alltag')) { wert = String(Math.round(a.ftp_ref_w)); u = 'W'; sub = 'Schwellenleistung (FTP)'; }
+    else if (fa && fa.status === 'ok' && fa.fitness_alter != null) { wert = String(Math.round(fa.fitness_alter)); u = 'Jahre'; sub = 'Fitness-Alter'; }
+    else { const h = (T.ui.rowsOf('heute') || [])[0]; if (h && h.score != null) { wert = String(h.score); u = '%'; sub = 'Tagesform heute'; } }
+    n.hidden = !wert;
+    if (!wert) return;
+    n.replaceChildren(el('span', { class: 'tf-augenbraue', text: 'Nordstern' }), el('span', { class: 'tf-nordstern-z' }, S.punktMatrix(wert, sub + ': ' + wert + ' ' + u), el('small', { text: u })), el('small', { class: 'tf-nordstern-s', text: sub }));
+  }
+  T.zusatz('heute', ordnen);
+  T.zusatz('heute', heldMatrix);
+  T.zusatz('*', seitenleiste);
+  window.tfStart = { ordnen, anpassen, tageszeit, einstellung };
+})();
